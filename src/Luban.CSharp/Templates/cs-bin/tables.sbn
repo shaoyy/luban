@@ -1,4 +1,6 @@
 using Luban;
+using System;
+using System.Collections.Generic;
 
 {{namespace_with_grace_begin __namespace}}
 public partial class {{__name}}
@@ -9,9 +11,14 @@ public partial class {{__name}}
     /// {{escape_comment table.comment}}
     /// </summary>
 {{~end~}}
-    public {{table.full_name}} {{format_property_name __code_style table.name}} {get; }
+    public {{table.full_name}} {{format_property_name __code_style table.name}} {get; private set; }
     {{~end~}}
+    
+	private Action<string> onError;
 
+    public {{__name}}() {}
+
+    [Obsolete]
     public {{__name}}(System.Func<string, ByteBuf> loader)
     {
         {{~for table in __tables ~}}
@@ -20,12 +27,30 @@ public partial class {{__name}}
         ResolveRef();
     }
     
+	public IEnumerable<TablesLoadInfo> GetLoadTablesInfo()
+    {
+	    {{~for table in __tables ~}}
+        yield return new TablesLoadInfo { tableName = "{{table.output_data_file}}", setTbDataAction = bytes => {{format_property_name __code_style table.name}} = new {{table.full_name}}(bytes, OnError) };
+        {{~end~}}
+    }
+	
     private void ResolveRef()
     {
         {{~for table in __tables ~}}
         {{format_property_name __code_style table.name}}.ResolveRef(this);
         {{~end~}}
     }
+	
+	public struct TablesLoadInfo
+    {
+        public string tableName;
+        public Action<ByteBuf> setTbDataAction;
+    }
+	
+	private void OnError(string errStr)
+	{
+	    onError?.Invoke(errStr);
+	}
 }
 
 {{namespace_with_grace_end __namespace}}
