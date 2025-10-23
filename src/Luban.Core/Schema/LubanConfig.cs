@@ -14,4 +14,12 @@ public class LubanConfig
     public List<string> Xargs { get; set; }
 
     public string InputDataDir { get; set; }
+
+    public string TbLocalize { get; set; }
+
+    public string LocalizeExportFile { get; set; }
+
+    public string LocalizeExportFileName { get; set; }
+
+    public string LocalizeLanguage { get; set; }
 }

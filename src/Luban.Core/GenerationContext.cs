@@ -25,6 +25,8 @@ public class GenerationContextBuilder
     public List<string> ExcludeTags { get; set; }
 
     public string TimeZone { get; set; }
+
+    public bool ExportLocalize { get; set; }
 }
 
 public class GenerationContext
@@ -61,6 +63,8 @@ public class GenerationContext
 
     public TimeZoneInfo TimeZone { get; private set; }
 
+    public bool ExportLocalize { get; set; }
+
     public ITextProvider TextProvider { get; private set; }
 
     private readonly Dictionary<string, object> _uniqueObjects = new();
@@ -74,6 +78,10 @@ public class GenerationContext
         s_logger.Info("load datas begin");
         TextProvider?.Load();
         DataLoaderManager.Ins.LoadDatas(this);
+        if (ExportLocalize)
+        {
+            LocalizeManager.Ins.LoadDatas();
+        }
         s_logger.Info("load datas end");
     }
 
@@ -101,6 +109,7 @@ public class GenerationContext
         ExportTypes = CalculateExportTypes();
         ExportBeans = SortBeanTypes(ExportTypes.OfType<DefBean>().ToList());
         ExportEnums = ExportTypes.OfType<DefEnum>().ToList();
+        ExportLocalize = builder.ExportLocalize;
     }
 
     private void AddChildrenByOrder(List<DefBean> list, DefBean bean)

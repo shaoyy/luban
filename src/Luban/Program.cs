@@ -66,6 +66,9 @@ internal static class Program
         [Option('w', "watchDir", Required = false, HelpText = "watch dir and regererate when dir changes")]
         public IEnumerable<string> WatchDirs { get; set; }
 
+        [Option("loc", Required = false, HelpText = "export localize")]
+        public bool ExportLocalize { get; set; }
+
         [Option('v', "verbose", Required = false, HelpText = "verbose")]
         public bool Verbose { get; set; }
     }
@@ -291,6 +294,7 @@ internal static class Program
             ExcludeTags = opts.ExcludeTags?.ToList() ?? new List<string>(),
             Variants = ParseVariants(opts.Variants),
             TimeZone = opts.TimeZone,
+            ExportLocalize = opts.ExportLocalize,
         };
     }
 

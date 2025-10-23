@@ -52,6 +52,12 @@ public class GlobalConfigLoader : IConfigLoader
 
         public string DataDir { get; set; }
 
+        public string TbLocalize { get; set; }
+
+        public string LocalizeExportFile { get; set; }
+
+        public string LocalizeLanguage { get; set; }
+
         public List<Target> Targets { get; set; }
 
         public List<string> Xargs { get; set; }
@@ -74,6 +80,13 @@ public class GlobalConfigLoader : IConfigLoader
         var dataInputDir = Path.Combine(_curDir, globalConf.DataDir);
         List<RawGroup> groups = globalConf.Groups.Select(g => new RawGroup() { Names = g.Names, IsDefault = g.Default }).ToList();
         List<RawTarget> targets = globalConf.Targets.Select(t => new RawTarget() { Name = t.Name, Manager = t.Manager, Groups = t.Groups, TopModule = t.TopModule }).ToList();
+        var localizeExportFile = string.Empty;
+        var localizeExportFileName = string.Empty;
+        if (!string.IsNullOrEmpty(globalConf.LocalizeExportFile))
+        {
+            localizeExportFile = Path.Combine(_curDir, globalConf.LocalizeExportFile);
+            localizeExportFileName = Path.GetFileName(localizeExportFile);
+        }
 
         List<SchemaFileInfo> importFiles = new();
         foreach (var schemaFile in globalConf.SchemaFiles)
@@ -99,6 +112,10 @@ public class GlobalConfigLoader : IConfigLoader
             Targets = targets,
             Imports = importFiles,
             Xargs = globalConf.Xargs,
+            TbLocalize = globalConf.TbLocalize,
+            LocalizeExportFile = localizeExportFile,
+            LocalizeExportFileName = localizeExportFileName,
+            LocalizeLanguage = globalConf.LocalizeLanguage
         };
     }
 

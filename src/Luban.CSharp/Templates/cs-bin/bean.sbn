@@ -20,6 +20,18 @@ func get_index_var_name
     ret (format_property_name __code_style $0.name) + '_Index'
 end
 
+func get_loc_name
+    ret (format_property_name __code_style $0.name) + '_Key'
+end
+
+func get_field_name
+    if $0.localize
+        ret get_loc_name $0
+    else
+        ret (format_property_name __code_style $0.name)
+    end
+end
+
 func generate_resolve_field_ref
     field = $0
     fieldName = format_property_name __code_style field.name
@@ -71,7 +83,7 @@ public {{class_modifier __bean}} partial class {{__name}} : {{if parent_def_type
     public {{__name}}(ByteBuf _buf) {{if parent_def_type}} : base(_buf) {{end}}
     {
         {{~ for field in export_fields
-            fieldName = format_property_name __code_style field.name
+            fieldName = get_field_name field
          ~}}
         {{deserialize '_buf' fieldName field.ctype}}
             {{~if can_generate_ref field~}}
@@ -107,15 +119,18 @@ public {{class_modifier __bean}} partial class {{__name}} : {{if parent_def_type
     /// {{escape_comment field.comment}}
     /// </summary>
 {{~end~}}
-    public readonly {{declaring_type_name field.ctype}} {{format_property_name __code_style field.name}};
+    public readonly {{declaring_type_name field.ctype}} {{get_field_name field}};
     {{~if can_generate_ref field~}}
     public {{declaring_type_name (get_ref_type field)}} {{get_ref_name field}};
     {{~else if can_generate_collection_ref field~}}
     public {{declaring_collection_ref_name field.ctype}} {{get_ref_name field}};
     {{~end~}}
-   {{~if has_index field
+    {{~if field.localize~}}
+    public {{declaring_type_name field.ctype}} {{format_property_name __code_style field.name}} => TableLoalizeHelper.OnGetLocalize({{get_field_name field}});
+    {{~end~}}
+    {{~if has_index field
         indexMapType = get_index_map_type field
-   ~}}
+    ~}}
     public readonly {{declaring_type_name indexMapType}} {{get_index_var_name field}} = new {{declaring_type_name indexMapType}}();
    {{~end~}}
    {{~end~}}
@@ -142,7 +157,7 @@ public {{class_modifier __bean}} partial class {{__name}} : {{if parent_def_type
     {
         return "{{full_name}}{ "
     {{~for field in hierarchy_export_fields ~}}
-        + "{{format_field_name __code_style field.name}}:" + {{to_pretty_string (format_property_name __code_style field.name) field.ctype}} + ","
+        + "{{get_field_name field}}:" + {{to_pretty_string (get_field_name field) field.ctype}} + ","
     {{~end~}}
         + "}";
     }

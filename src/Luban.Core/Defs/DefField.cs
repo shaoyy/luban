@@ -41,6 +41,8 @@ public class DefField
 
     public bool IgnoreNameValidation { get; set; }
 
+    public bool Localize => CType.HasTag("localize");
+
     public bool HasTag(string attrName)
     {
         return Tags != null && Tags.ContainsKey(attrName);

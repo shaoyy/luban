@@ -393,6 +393,9 @@ public class DefAssembly
             case "text":
                 tags.Add("text", "1");
                 return TString.Create(nullable, tags);
+            case "localize":
+                tags.Add("localize", "1");
+                return TString.Create(nullable, tags);
             case "time":
             case "datetime":
                 return TDateTime.Create(nullable, tags);

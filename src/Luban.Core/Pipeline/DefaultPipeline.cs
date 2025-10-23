@@ -60,6 +60,7 @@ public class DefaultPipeline : IPipeline
             IncludeTags = _args.IncludeTags,
             ExcludeTags = _args.ExcludeTags,
             TimeZone = _args.TimeZone,
+            ExportLocalize = _args.ExportLocalize,
         };
         _genCtx.Init(generationCtxBuilder);
     }
@@ -84,6 +85,10 @@ public class DefaultPipeline : IPipeline
         if (_genCtx.TextProvider != null)
         {
             _genCtx.TextProvider.ProcessDatas();
+        }
+        if (_genCtx.ExportLocalize)
+        {
+            LocalizeManager.Ins.ProcessDatas();
         }
     }
 
@@ -117,6 +122,10 @@ public class DefaultPipeline : IPipeline
             }
         }
         Task.WaitAll(tasks.ToArray());
+        if (_genCtx.ExportLocalize)
+        {
+            LocalizeManager.Ins.Save();
+        }
     }
 
     protected void ProcessCodeTarget(string name, ICodeTarget codeTarget)
