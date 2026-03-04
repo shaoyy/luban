@@ -100,6 +100,7 @@ public class LocalizeManager
         var localizeConfigRecords = GenerationContext.Current.GetTableAllDataList(localizeTableDef);
         var otherRecords = new List<Record>();
         var tableRecords = new SortedDictionary<string, Record>();
+        var writeStrCType = localizeTableDef.ValueTType.DefBean.HierarchyFields[localizeLanguageIndex].CType;
         foreach (var record in localizeConfigRecords)
         {
             var key = ((DString)record.Data.Fields[localizeTableDef.IndexFieldIdIndex]).Value;
@@ -110,6 +111,11 @@ public class LocalizeManager
             }
             else if(mExportLocalizeMap.ContainsKey(key))
             {
+                var dValue = record.Data.Fields[localizeLanguageIndex] as DString;
+                if(dValue.Value != mExportLocalizeMap[key])
+                {
+                    record.Data.Fields[localizeLanguageIndex] = DString.ValueOf(writeStrCType, mExportLocalizeMap[key]);
+                }
                 tableRecords[key] = record;
             }
         }
