@@ -115,6 +115,28 @@ public class TypeTemplateExtension : ScriptObject
         return field.CType.GetTag("index");
     }
 
+    /// <summary>
+    /// 会检查ElementType
+    /// </summary>
+    public static bool HasLocalize(DefField field)
+    {
+        if (field.Localize)
+        {
+            return true;
+        }
+        TType type = field.CType;
+        if (type.IsCollection)
+        {
+            return type.ElementType.HasTag("localize");
+        }
+        return false;
+    }
+
+    public static bool IsListOrArray(DefField field)
+    {
+        return field.CType is TList or TArray;
+    }
+
     public static DefField GetIndexField(DefField field)
     {
         string indexName = GetIndexName(field);
